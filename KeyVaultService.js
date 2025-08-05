@@ -1,7 +1,7 @@
-import { DefaultAzureCredential } from "@azure/identity";
-import { SecretClient } from "@azure/keyvault-secrets"
+const { DefaultAzureCredential } = require ("@azure/identity");
+const { SecretClient } = require ("@azure/keyvault-secrets")
 
-export class KeyVaultService {
+class KeyVaultService {
     constructor(keyVaultUrl){
         const credential = new DefaultAzureCredential()
         this.client = new SecretClient(keyVaultUrl, credential)
@@ -23,8 +23,10 @@ export class KeyVaultService {
     try {
       await this.client.setSecret(secretName, value);
       console.log(`Secret '${secretName}' set successfully.`);
+      return true
     } catch (error) {
       console.error("Error setting secret:", error.message);
+      return false
     }
   }
 
@@ -32,8 +34,10 @@ export class KeyVaultService {
     try {
       await this.client.beginDeleteSecret(secretName);
       console.log(`Secret '${secretName}' deleted successfully.`);
+      return true
     } catch (error) {
       console.error("Error deleting secret:", error.message);
+      return false
     }
   }
 
@@ -52,3 +56,7 @@ export class KeyVaultService {
   }    
 
 }
+
+const keyVault = new KeyVaultService(process.env.VAULT_URI)
+
+module.exports = keyVault
